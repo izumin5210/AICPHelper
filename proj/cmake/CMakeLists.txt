@@ -37,6 +37,7 @@ set(CINDER_IMGUI_SOURCES
 
 set(PROJECT_SOURCES
   ${PROJECT_DIR}/src/AICPHelperApp.cpp
+  ${PROJECT_DIR}/src/AppGui.cpp
   ${CINDER_IMGUI_SOURCES}
 )
 
