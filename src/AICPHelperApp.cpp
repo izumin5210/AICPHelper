@@ -7,28 +7,24 @@ using namespace ci::app;
 using namespace std;
 
 class AICPHelperApp : public App {
-  public:
-	void setup() override;
-	void mouseDown( MouseEvent event ) override;
-	void update() override;
-	void draw() override;
+public:
+  void setup() override;
+  void mouseDown(MouseEvent event) override;
+  void update() override;
+  void draw() override;
 };
 
-void AICPHelperApp::setup()
-{
+void AICPHelperApp::setup() {
 }
 
-void AICPHelperApp::mouseDown( MouseEvent event )
-{
+void AICPHelperApp::mouseDown(MouseEvent event) {
 }
 
-void AICPHelperApp::update()
-{
+void AICPHelperApp::update() {
 }
 
-void AICPHelperApp::draw()
-{
-	gl::clear( Color( 0, 0, 0 ) ); 
+void AICPHelperApp::draw() {
+  gl::clear(Color( 0, 0, 0 ));
 }
 
 CINDER_APP( AICPHelperApp, RendererGl )
