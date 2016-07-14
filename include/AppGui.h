@@ -12,6 +12,8 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
+#include "Box.h"
+
 namespace bfs = boost::filesystem;
 
 class AppGui {
@@ -21,6 +23,7 @@ public:
   using PointCloud    = pcl::PointCloud<PointT>;
   using PointCloudPtr = PointCloud::Ptr;
 
+  AppGui();
   void initialize(cinder::app::AppBase *app);
   void update();
 
@@ -28,6 +31,19 @@ private:
   const ImGuiWindowFlags kWindowFlags = ImGuiWindowFlags_ShowBorders;
   const int kWindowSpacing  = 8;
   const int kWindowWidth    = 320;
+
+  std::map<Box::Kind, std::string> kCroppingWindowNames = {
+    { Box::Kind::HEAD,            "Head" },
+    { Box::Kind::TRUNK,           "Trunk" },
+    { Box::Kind::LEFT_UP_ARM,     "Left-up arm" },
+    { Box::Kind::RIGHT_UP_ARM,    "Right-up arm" },
+    { Box::Kind::LEFT_DOWN_ARM,   "Left-down arm" },
+    { Box::Kind::RIGHT_DOWN_ARM,  "Right-down arm" },
+    { Box::Kind::LEFT_UP_LEG,     "Left-up leg" },
+    { Box::Kind::RIGHT_UP_LEG,    "Right-up leg" },
+    { Box::Kind::LEFT_DOWN_LEG,   "Left-down leg" },
+    { Box::Kind::RIGHT_DOWN_LEG,  "Right-down leg" },
+  };
 
   const cinder::ColorA8u kColorBlackA55   = cinder::ColorA8u(0x22, 0x22, 0x22, 0x55);
   const cinder::ColorA8u kColorBlackAcc   = cinder::ColorA8u(0x22, 0x22, 0x22, 0xcc);
@@ -82,8 +98,13 @@ private:
 
   cinder::app::AppBase* app_;
 
-  void drawMenuBar(glm::vec2 &windowPos);
-  void drawInfoWindow(glm::vec2 &windowPos);
+  std::vector<Box> boxes_;
+  glm::vec3 boxes_offset_;
+  bool enable_cropping_;
+
+  void drawMenuBar(glm::vec2 &left_window_pos, glm::vec2 &right_window_pos);
+  void drawInfoWindow(glm::vec2 &window_pos);
+  void drawCroppingWindow(glm::vec2 &window_pos);
 };
 
 #endif //AICPHELPER_APPGUI_H
