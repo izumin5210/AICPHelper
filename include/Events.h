@@ -7,11 +7,10 @@
 
 #include "Box.h"
 
-namespace bfs       = boost::filesystem;
-using bpath         = bfs::path;
+#include <boost/filesystem.hpp>
 
 struct OpenDirectoryEvent {
-  bpath path;
+  boost::filesystem::path path;
 };
 
 struct UpdateCloudEvent {
@@ -28,6 +27,24 @@ struct UpdateBoxOffsetEvent {
 
 struct EnableCroppingEvent {
   bool enable;
+};
+
+struct SaveCroppingParamsEvent {
+  boost::filesystem::path path;
+};
+
+struct UpdateAppearanceEvent {
+  float point_size;
+  float slerp_t;
+  bool visible_current_cloud;
+  bool visible_next_cloud;
+  bool visible_transformed_cloud;
+  bool coloring_limbs;
+};
+
+struct TransformCloudsEvent {
+  boost::filesystem::path path;
+  int max_iterations;
 };
 
 #endif //AICPHELPER_EVENTS_H

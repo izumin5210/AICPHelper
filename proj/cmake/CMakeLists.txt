@@ -38,15 +38,15 @@ set(CINDER_IMGUI_SOURCES
 set(PROJECT_SOURCES
   ${PROJECT_DIR}/src/AICPHelperApp.cpp
   ${PROJECT_DIR}/src/AppGui.cpp
-  ${PROJECT_DIR}/src/Cloud.cpp
+  ${PROJECT_DIR}/src/Clouds.cpp
   ${CINDER_IMGUI_SOURCES}
 )
 
 include("${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake")
 
 ci_make_app(
-  SOURCES           ${PROJECT_SOURCES}
-  INCLUDES          ${PROJECT_DIR}/include ${PCL_INCLUDE_DIRS}
-  CINDER_PATH       ${CINDER_PATH}
-  TARGET_LIBRARIES  ${PCL_LIBRARIES} ${OpenCV_LIBS} ${Boost_LIBRARIES}
+  SOURCES       ${PROJECT_SOURCES}
+  INCLUDES      ${PROJECT_DIR}/include ${PCL_INCLUDE_DIRS}
+  CINDER_PATH   ${CINDER_PATH}
+  LIBRARIES     ${PCL_LIBRARIES} ${OpenCV_LIBS} ${Boost_LIBRARIES} yaml-cpp
 )

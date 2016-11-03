@@ -13,6 +13,7 @@
 #include <pcl/point_cloud.h>
 
 #include "Box.h"
+#include "Clouds.h"
 
 namespace bfs = boost::filesystem;
 
@@ -23,7 +24,7 @@ public:
   using PointCloud    = pcl::PointCloud<PointT>;
   using PointCloudPtr = PointCloud::Ptr;
 
-  AppGui();
+  AppGui(std::shared_ptr<Clouds> clouds);
   void initialize(cinder::app::AppBase *app);
   void update();
 
@@ -45,36 +46,38 @@ private:
     { Box::Kind::RIGHT_DOWN_LEG,  "Right-down leg" },
   };
 
-  const cinder::ColorA8u kColorBlackA55   = cinder::ColorA8u(0x22, 0x22, 0x22, 0x55);
-  const cinder::ColorA8u kColorBlackAcc   = cinder::ColorA8u(0x22, 0x22, 0x22, 0xcc);
   // bleu de provence
-  const cinder::ColorA8u kColorPrimary    = cinder::ColorA8u(0x00, 0x9a, 0xc5, 0xcc);
-  const cinder::ColorA8u kColorPrimaryA99 = cinder::ColorA8u(0x00, 0x9a, 0xc5, 0x99);
-  const cinder::ColorA8u kColorPrimaryA22 = cinder::ColorA8u(0x00, 0x9a, 0xc5, 0x22);
+  const ci::ColorA8u kColorPrimary    = ci::ColorA8u(0x00, 0x9a, 0xc5, 0xcc);
+  const ci::ColorA8u kColorPrimaryA99 = ci::ColorA8u(0x00, 0x9a, 0xc5, 0x99);
+  const ci::ColorA8u kColorPrimaryA33 = ci::ColorA8u(0x00, 0x9a, 0xc5, 0x33);
+  const ci::ColorA8u kColorPrimaryDark = ci::ColorA8u(0x00, 0x27, 0x33, 0xbb);
   // rosso di toscana
-  const cinder::ColorA8u kColorAccent     = cinder::ColorA8u(0xf1, 0x67, 0x3f, 0xee);
-  const cinder::ColorA8u kColorAccentAcc  = cinder::ColorA8u(0xf1, 0x67, 0x3f, 0xcc);
-  const cinder::ColorA8u kColorAccentA99  = cinder::ColorA8u(0xf1, 0x67, 0x3f, 0x99);
+  const ci::ColorA8u kColorAccent     = ci::ColorA8u(0xf1, 0x67, 0x3f, 0xee);
+  const ci::ColorA8u kColorAccentAcc  = ci::ColorA8u(0xf1, 0x67, 0x3f, 0xcc);
+  const ci::ColorA8u kColorAccentA99  = ci::ColorA8u(0xf1, 0x67, 0x3f, 0x99);
 
-  const ui::Options options = ui::Options()
+  const ci::ColorA8u kColorWhite      = ci::ColorA8u(0xdd, 0xdd, 0xdd, 0xcc);
+  const ci::ColorA8u kColorBlackA55   = ci::ColorA8u(0x11, 0x11, 0x11, 0x55);
+
+  const ui::Options kUiOptions = ui::Options()
     .darkTheme()
-    .color(ImGuiCol_MenuBarBg,              kColorPrimaryA22)
-    .color(ImGuiCol_TitleBg,                kColorPrimaryA22)
-    .color(ImGuiCol_TitleBgCollapsed,       kColorPrimaryA22)
+    .color(ImGuiCol_MenuBarBg,              kColorPrimaryA33)
+    .color(ImGuiCol_TitleBg,                kColorPrimaryDark)
+    .color(ImGuiCol_TitleBgCollapsed,       kColorPrimaryDark)
     .color(ImGuiCol_TitleBgActive,          kColorPrimaryA99)
-    .color(ImGuiCol_WindowBg,               kColorPrimaryA22)
+    .color(ImGuiCol_WindowBg,               kColorPrimaryDark)
     .color(ImGuiCol_Border,                 kColorPrimaryA99)
-    .color(ImGuiCol_FrameBg,                kColorPrimaryA22)
+    .color(ImGuiCol_FrameBg,                kColorPrimaryA33)
     .color(ImGuiCol_FrameBgHovered,         kColorAccentAcc)
     .color(ImGuiCol_FrameBgActive,          kColorAccent)
-    .color(ImGuiCol_ScrollbarBg,            kColorPrimaryA22)
+    .color(ImGuiCol_ScrollbarBg,            kColorPrimaryA33)
     .color(ImGuiCol_ScrollbarGrab,          kColorPrimaryA99)
     .color(ImGuiCol_ScrollbarGrabHovered,   kColorPrimaryA99)
     .color(ImGuiCol_ScrollbarGrabActive,    kColorPrimary)
     .color(ImGuiCol_CheckMark,              kColorAccent)
     .color(ImGuiCol_SliderGrab,             kColorPrimaryA99)
     .color(ImGuiCol_SliderGrabActive,       kColorPrimary)
-    .color(ImGuiCol_Button,                 kColorPrimaryA22)
+    .color(ImGuiCol_Button,                 kColorPrimaryA33)
     .color(ImGuiCol_ButtonHovered,          kColorAccentAcc)
     .color(ImGuiCol_ButtonActive,           kColorAccent)
     .color(ImGuiCol_Header,                 kColorAccentA99)
@@ -88,23 +91,34 @@ private:
     .color(ImGuiCol_PlotHistogram,          kColorPrimaryA99)
     .color(ImGuiCol_PlotHistogramHovered,   kColorPrimary)
     .color(ImGuiCol_Text,                   kColorPrimary)
-    .color(ImGuiCol_TextDisabled,           kColorBlackA55)
+    .color(ImGuiCol_TextDisabled,           kColorPrimaryA99)
     .color(ImGuiCol_TextSelectedBg,         kColorAccent)
-    .color(ImGuiCol_PopupBg,                kColorBlackAcc)
+    .color(ImGuiCol_PopupBg,                kColorPrimaryDark)
     .antiAliasedLines(true)
     .antiAliasedShapes(true)
     .windowRounding(0.0f)
     .frameRounding(0.0f);
 
+  std::shared_ptr<Clouds> clouds_;
   cinder::app::AppBase* app_;
 
-  std::vector<Box> boxes_;
-  glm::vec3 boxes_offset_;
+  float point_size_;
+  float slerp_t_;
+  bool visible_current_cloud_;
+  bool visible_next_cloud_;
+  bool visible_transformed_cloud_;
+  bool coloring_limbs_;
+
   bool enable_cropping_;
 
   void drawMenuBar(glm::vec2 &left_window_pos, glm::vec2 &right_window_pos);
+  void drawCloudsWindow(glm::vec2 &window_pos);
+  void drawTransformationWindow(glm::vec2 &window_pos);
   void drawInfoWindow(glm::vec2 &window_pos);
   void drawCroppingWindow(glm::vec2 &window_pos);
+  void saveCroppingParams();
+
+  void emitAppearanceUpdate();
 };
 
 #endif //AICPHELPER_APPGUI_H

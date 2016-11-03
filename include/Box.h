@@ -8,8 +8,10 @@
 #include "glm/glm.hpp"
 #include "glm/gtx/quaternion.hpp"
 
+#include "Singleton.h"
+
 struct Box {
-  enum Kind {
+  enum struct Kind {
     HEAD,
     TRUNK,
     LEFT_UP_ARM,
@@ -20,12 +22,22 @@ struct Box {
     RIGHT_UP_LEG,
     LEFT_DOWN_LEG,
     RIGHT_DOWN_LEG,
+    NUM_OF_LIMBS
   };
 
   Kind kind;
   glm::vec3 size;
   glm::vec3 rot;
   glm::vec3 trans;
+};
+
+struct Limbs {
+  std::map<Box::Kind, Box> boxes;
+  glm::vec3 offset;
+
+  static Limbs& get() {
+    return Singleton<Limbs>::get();
+  }
 };
 
 #endif //AICPHELPER_BOX_H
